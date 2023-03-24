@@ -44,6 +44,10 @@ func (pw *protoFileWriter) ToStringBuilder() (*strings.Builder, error) {
 		return nil, fmt.Errorf("could not add imports: %v", err)
 	}
 
+	if err := pw.addEnums(); err != nil {
+		return nil, fmt.Errorf("could not add enums: %v", err)
+	}
+
 	if err := pw.addMessages(); err != nil {
 		return nil, fmt.Errorf("could not add messages: %v", err)
 	}
@@ -172,9 +176,21 @@ func (pw *protoFileWriter) addMessage(m *Message, indents uint) error {
 		return fmt.Errorf("could not add message start: %v", err)
 	}
 
+	for i := range m.Enums {
+		if err := pw.addEnum(&m.Enums[i], indents+1); err != nil {
+			return fmt.Errorf("could not add enum %s at index %d: %v", m.Enums[i].Name, i, err)
+		}
+	}
+
+	for i := range m.Messages {
+		if err := pw.addMessage(&m.Messages[i], indents+1); err != nil {
+			return fmt.Errorf("could not add message %s at index %d: %v", m.Messages[i].Name, i, err)
+		}
+	}
+
 	for i := range m.Fields {
-		if err := pw.addField(&m.Fields[i], indents+1); err != nil {
-			return fmt.Errorf("could not add field %s at index %d: %v", m.Fields[i].Name, i, err)
+		if err := pw.addMessageField(&m.Fields[i], indents+1); err != nil {
+			return fmt.Errorf("could not add message field %s at index %d: %v", m.Fields[i].Name, i, err)
 		}
 	}
 
@@ -184,7 +200,7 @@ func (pw *protoFileWriter) addMessage(m *Message, indents uint) error {
 	return nil
 }
 
-func (pw *protoFileWriter) addField(f *MessageField, indents uint) error {
+func (pw *protoFileWriter) addMessageField(f *MessageField, indents uint) error {
 	if err := pw.addDescription(f.Description, indents); err != nil {
 		return fmt.Errorf("could not add description for field: %v", err)
 	}
@@ -207,6 +223,57 @@ func (pw *protoFileWriter) addField(f *MessageField, indents uint) error {
 
 	if err := pw.writeLine(fmt.Sprintf("%s%s %s = %d;", cardinality, f.Type, f.Name, f.Id), indents); err != nil {
 		return fmt.Errorf("could not add field line: %v", err)
+	}
+
+	return nil
+}
+
+func (pw *protoFileWriter) addEnums() error {
+	for i := range pw.Proto.Enums {
+		if err := pw.addEnum(&pw.Proto.Enums[i], 0); err != nil {
+			return fmt.Errorf("could not add enum %s at index %d: %v", pw.Proto.Enums[i].Name, i, err)
+		}
+	}
+
+	return nil
+}
+
+func (pw *protoFileWriter) addEnum(e *Enum, indents uint) error {
+	if err := pw.addDescription(e.Description, indents); err != nil {
+		return fmt.Errorf("could not add description for enum: %v", err)
+	}
+
+	if isEmptyStr(e.Name) {
+		return fmt.Errorf("enum name cannot be empty")
+	}
+
+	if err := pw.writeLine(fmt.Sprintf("enum %s {", e.Name), indents); err != nil {
+		return fmt.Errorf("could not add enum start: %v", err)
+	}
+
+	for i := range e.Constants {
+		if err := pw.addEnumConstant(&e.Constants[i], indents+1); err != nil {
+			return fmt.Errorf("could not add enum constant %s at index %d: %v", e.Constants[i].Name, i, err)
+		}
+	}
+
+	if err := pw.writeLine("}\n", indents); err != nil {
+		return fmt.Errorf("could not add enum end: %v", err)
+	}
+	return nil
+}
+
+func (pw *protoFileWriter) addEnumConstant(c *EnumConstant, indents uint) error {
+	if err := pw.addDescription(c.Description, indents); err != nil {
+		return fmt.Errorf("could not add description for costant: %v", err)
+	}
+
+	if isEmptyStr(c.Name) {
+		return fmt.Errorf("constant name cannot be empty")
+	}
+
+	if err := pw.writeLine(fmt.Sprintf("%s = %d;", c.Name, c.Value), indents); err != nil {
+		return fmt.Errorf("could not add constant line: %v", err)
 	}
 
 	return nil

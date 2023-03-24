@@ -32,11 +32,12 @@ type MessageField struct {
 
 type Enum struct {
 	Description string
+	Name        string
 	Constants   []EnumConstant
 }
 
 type EnumConstant struct {
 	Description string
 	Name        string
-	Value       string
+	Value       uint
 }

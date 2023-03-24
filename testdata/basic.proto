@@ -7,12 +7,22 @@ package basic;
 
 import "google/protobuf/empty.proto";
 
+// This is an Enum with global scope
+enum GlobalEnum {
+    // This is variant A
+    VARIANT_A = 1;
+    // This is variant B
+    VARIANT_B = 2;
+}
+
 // This message contains basic types
 message BasicType {
     // This is required string field
     string name = 0;
     // This is optional numeric field
     optional uint32 num = 1;
+    // This is optional enum field
+    optional GlobalEnum global_enum = 2;
 }
 
 // This message contains list types
@@ -21,14 +31,48 @@ message ListType {
     repeated string names = 0;
     // This is list of numbers
     repeated uint32 num = 1;
+    // This is list of enums
+    repeated GlobalEnum global_enums = 2;
 }
 
 // This message contains complex types
 message ComplexType {
+    // This is an Enum with message scope
+    enum NestedEnum {
+        // This is variant A
+        VARIANT_A = 1;
+        // This is variant B
+        VARIANT_B = 2;
+    }
+
+    // This is a nested message
+    message NestedMessage {
+        // This is a double nested Enum with message scope
+        enum DoublyNestedEnum {
+            // This is variant A
+            VARIANT_A = 1;
+            // This is variant B
+            VARIANT_B = 2;
+        }
+
+        // This is required string field
+        string name = 0;
+        // This is optional numeric field
+        optional uint32 num = 1;
+        // This is optional enum field
+        optional GlobalEnum global_enum = 2;
+    }
+
     // This holds BasicType
     BasicType basic = 0;
     // This holds ListType
     ListType list = 1;
+    // This holds NestedMessage
+    NestedMessage nested_message = 2;
+    // This holds NestedEnum
+    NestedEnum nested_enum = 3;
+    // This holds DoublyNestedEnum
+    NestedMessage.DoublyNestedEnum doubly_nested_enum = 4;
 }
 
 
