@@ -52,9 +52,10 @@ func (pw *protoFileWriter) ToStringBuilder() (*strings.Builder, error) {
 		return nil, fmt.Errorf("could not add messages: %v", err)
 	}
 
-	if err := pw.writeLine("", 0); err != nil {
-		return nil, fmt.Errorf("could not write empty line: %v", err)
+	if err := pw.addServices(); err != nil {
+		return nil, fmt.Errorf("could not add services: %v", err)
 	}
+
 	return &pw.sb, nil
 }
 
@@ -274,6 +275,73 @@ func (pw *protoFileWriter) addEnumConstant(c *EnumConstant, indents uint) error 
 
 	if err := pw.writeLine(fmt.Sprintf("%s = %d;", c.Name, c.Value), indents); err != nil {
 		return fmt.Errorf("could not add constant line: %v", err)
+	}
+
+	return nil
+}
+
+func (pw *protoFileWriter) addServices() error {
+	for i := range pw.Proto.Services {
+		if err := pw.addService(&pw.Proto.Services[i], 0); err != nil {
+			return fmt.Errorf("could not add service %s at index %d: %v", pw.Proto.Services[i].Name, i, err)
+		}
+	}
+
+	return nil
+}
+
+func (pw *protoFileWriter) addService(s *Service, indents uint) error {
+	if err := pw.addDescription(s.Description, indents); err != nil {
+		return fmt.Errorf("could not add description for service: %v", err)
+	}
+
+	if isEmptyStr(s.Name) {
+		return fmt.Errorf("service name cannot be empty")
+	}
+
+	if err := pw.writeLine(fmt.Sprintf("service %s {", s.Name), indents); err != nil {
+		return fmt.Errorf("could not add service start: %v", err)
+	}
+
+	for i := range s.Methods {
+		if err := pw.addServiceMethod(&s.Methods[i], indents+1); err != nil {
+			return fmt.Errorf("could not add service method %s at index %d: %v", s.Methods[i].Name, i, err)
+		}
+	}
+
+	if err := pw.writeLine("}\n", indents); err != nil {
+		return fmt.Errorf("could not add service end: %v", err)
+	}
+	return nil
+}
+
+func (pw *protoFileWriter) addServiceMethod(m *ServiceMethod, indents uint) error {
+	if err := pw.addDescription(m.Description, indents); err != nil {
+		return fmt.Errorf("could not add description for method: %v", err)
+	}
+
+	if isEmptyStr(m.Name) {
+		return fmt.Errorf("method name cannot be empty")
+	}
+	if isEmptyStr(m.Request) {
+		return fmt.Errorf("method request cannot be empty")
+	}
+	if isEmptyStr(m.Response) {
+		return fmt.Errorf("method response cannot be empty")
+	}
+
+	streamReq := ""
+	if m.StreamRequest {
+		streamReq = "stream"
+	}
+
+	streamRes := ""
+	if m.StreamResponse {
+		streamRes = "stream"
+	}
+
+	if err := pw.writeLine(fmt.Sprintf("rpc %s(%s%s) returns (%s%s);", m.Name, streamReq, m.Request, streamRes, m.Response), indents); err != nil {
+		return fmt.Errorf("could not add method line: %v", err)
 	}
 
 	return nil

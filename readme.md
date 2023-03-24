@@ -21,6 +21,7 @@ This package provides Go structures for constructs used in Protocol Buffer file 
         pw := pfg.NewProtoFileWriter(
             &pfg.Proto{
                 Package: "test",
+                Imports: []string{"google/protobuf/empty.proto"},
                 Messages: []pfg.Message{
                     {
                         Name:        "BasicType",
@@ -31,6 +32,20 @@ This package provides Go structures for constructs used in Protocol Buffer file 
                                 Name:        "name",
                                 Type:        "string",
                                 Id:          0,
+                            },
+                        },
+                    },
+                },
+                Services: []pfg.Service{
+                    {
+                        Name:        "BasicService",
+                        Description: "This is a service exercising BasicType",
+                        Methods: []pfg.ServiceMethod{
+                            {
+                                Name:        "GetBasic",
+                                Description: "Get BasicType",
+                                Request:     "google.protobuf.Empty",
+                                Response:    "BasicType",
                             },
                         },
                     },

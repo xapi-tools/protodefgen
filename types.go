@@ -7,6 +7,7 @@ type Proto struct {
 	Imports     []string
 	Enums       []Enum
 	Messages    []Message
+	Services    []Service
 }
 
 type Option struct {
@@ -40,4 +41,19 @@ type EnumConstant struct {
 	Description string
 	Name        string
 	Value       uint
+}
+
+type Service struct {
+	Description string
+	Name        string
+	Methods     []ServiceMethod
+}
+
+type ServiceMethod struct {
+	Description    string
+	Name           string
+	Request        string
+	StreamRequest  bool
+	Response       string
+	StreamResponse bool
 }

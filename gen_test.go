@@ -192,6 +192,54 @@ func TestToStringBuilder(t *testing.T) {
 							},
 						},
 					},
+					Services: []Service{
+						{
+							Name:        "BasicService",
+							Description: "This is a service exercising BasicType",
+							Methods: []ServiceMethod{
+								{
+									Name:        "GetBasic",
+									Description: "Get BasicType",
+									Request:     "google.protobuf.Empty",
+									Response:    "BasicType",
+								},
+								{
+									Name:        "PushBasic",
+									Description: "Push BasicType",
+									Request:     "BasicType",
+									Response:    "google.protobuf.Empty",
+								},
+							},
+						},
+						{
+							Name:        "ComplexService",
+							Description: "This is a service exercising ComplexType",
+							Methods: []ServiceMethod{
+								{
+									Name:          "StreamRequest",
+									Description:   "RPC with streaming request",
+									Request:       "BasicType",
+									StreamRequest: true,
+									Response:      "google.protobuf.Empty",
+								},
+								{
+									Name:           "StreamResponse",
+									Description:    "RPC with streaming response",
+									Request:        "google.protobuf.Empty",
+									Response:       "BasicType",
+									StreamResponse: true,
+								},
+								{
+									Name:           "StreamResponse",
+									Description:    "RPC with bidirectional streaming",
+									Request:        "BasicType",
+									StreamRequest:  true,
+									Response:       "ComplexType",
+									StreamResponse: true,
+								},
+							},
+						},
+					},
 				},
 				&ProtoWriterOpts{
 					IndentWidth: 4,
