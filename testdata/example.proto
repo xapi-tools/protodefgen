@@ -86,10 +86,10 @@ service BasicService {
 // This is a service exercising ComplexType
 service ComplexService {
     // RPC with streaming request
-    rpc StreamRequest(streamBasicType) returns (google.protobuf.Empty);
+    rpc StreamRequest(stream BasicType) returns (google.protobuf.Empty);
     // RPC with streaming response
-    rpc StreamResponse(google.protobuf.Empty) returns (streamBasicType);
+    rpc StreamResponse(google.protobuf.Empty) returns (stream BasicType);
     // RPC with bidirectional streaming
-    rpc StreamResponse(streamBasicType) returns (streamComplexType);
+    rpc StreamResponse(stream BasicType) returns (stream ComplexType);
 }
 

@@ -332,12 +332,12 @@ func (pw *protoFileWriter) addServiceMethod(m *ServiceMethod, indents uint) erro
 
 	streamReq := ""
 	if m.StreamRequest {
-		streamReq = "stream"
+		streamReq = "stream "
 	}
 
 	streamRes := ""
 	if m.StreamResponse {
-		streamRes = "stream"
+		streamRes = "stream "
 	}
 
 	if err := pw.writeLine(fmt.Sprintf("rpc %s(%s%s) returns (%s%s);", m.Name, streamReq, m.Request, streamRes, m.Response), indents); err != nil {
