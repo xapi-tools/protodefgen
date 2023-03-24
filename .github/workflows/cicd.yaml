@@ -19,3 +19,9 @@ jobs:
 
       - name: Unit Test
         run: go test -v ./...
+
+      - name: Doc Test
+        run: |
+          rm -rf doctest && mkdir -p doctest
+          sed -n '16,45p' readme.md > doctest/doctest.go
+          cd doctest && go run doctest.go && cat *
