@@ -20,6 +20,11 @@ jobs:
       - name: Unit Test
         run: go test -v ./...
 
+      - name: Lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v3.4.0
+
       - name: Doc Test
         run: |
           rm -rf doctest && mkdir -p doctest
