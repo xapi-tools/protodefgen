@@ -20,7 +20,7 @@ This package provides Go structures for constructs used in Protocol Buffer file 
     func main() {
         pw := pfg.NewProtoFileWriter(
             &pfg.Proto{
-                Package:     "basic",
+                Package:     "test",
                 Messages: []pfg.Message{
                     {
                         Name:        "BasicType",
@@ -41,6 +41,11 @@ This package provides Go structures for constructs used in Protocol Buffer file 
             },
         )
 
-        pw.ToFile("./basic.proto")
+        pw.ToFile("./test.proto")
     }
     ```
+
+
+Check following files for more comprehensive examples:
+- [Unit Test](gen_test.go)
+- [Output](testdata/example.proto)

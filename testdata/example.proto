@@ -3,7 +3,7 @@
 
 syntax = "proto3";
 
-package basic;
+package example;
 
 import "google/protobuf/empty.proto";
 
