@@ -1,6 +1,6 @@
-# protodefgen - Protocol Buffer File Generator
+# protodefgen - Protocol Buffer Definition Generator
 
-This package provides Go structures for constructs used in Protocol Buffer file and a helper to write those constructs to `.proto` file with valid syntax.
+This package provides Go structures for definitions used in Protocol Buffer file and a helper to write those constructs to `.proto` file with valid syntax.
 
 ### Usage
 
