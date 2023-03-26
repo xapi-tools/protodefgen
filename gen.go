@@ -10,20 +10,20 @@ type ProtoWriterOpts struct {
 	IndentWidth uint
 }
 
-type protoFileWriter struct {
+type protoDefWriter struct {
 	sb    strings.Builder
 	Proto *Proto
 	Opts  *ProtoWriterOpts
 }
 
-func NewProtoFileWriter(p *Proto, o *ProtoWriterOpts) ProtoFileWriter {
-	return &protoFileWriter{
+func NewProtoDefWriter(p *Proto, o *ProtoWriterOpts) ProtoDefWriter {
+	return &protoDefWriter{
 		Proto: p,
 		Opts:  o,
 	}
 }
 
-func (pw *protoFileWriter) ToStringBuilder() (*strings.Builder, error) {
+func (pw *protoDefWriter) ToStringBuilder() (*strings.Builder, error) {
 	if err := pw.addDescription(pw.Proto.Description, 0); err != nil {
 		return nil, fmt.Errorf("could not add description for proto file: %v", err)
 	}
@@ -59,7 +59,7 @@ func (pw *protoFileWriter) ToStringBuilder() (*strings.Builder, error) {
 	return &pw.sb, nil
 }
 
-func (pw *protoFileWriter) ToFile(path string) error {
+func (pw *protoDefWriter) ToFile(path string) error {
 	sb, err := pw.ToStringBuilder()
 	if err != nil {
 		return fmt.Errorf("could not get string builder from proto: %v", err)
@@ -71,7 +71,7 @@ func (pw *protoFileWriter) ToFile(path string) error {
 	return nil
 }
 
-func (pw *protoFileWriter) writeLine(input string, indents uint) error {
+func (pw *protoDefWriter) writeLine(input string, indents uint) error {
 	// TODO: optimize this
 	for i := 0; i < int(indents)*int(pw.Opts.IndentWidth); i++ {
 		if _, err := pw.sb.WriteString(" "); err != nil {
@@ -87,7 +87,7 @@ func (pw *protoFileWriter) writeLine(input string, indents uint) error {
 	return nil
 }
 
-func (pw *protoFileWriter) addDescription(description string, indents uint) error {
+func (pw *protoDefWriter) addDescription(description string, indents uint) error {
 	if isEmptyStr(description) {
 		return nil
 	}
@@ -100,7 +100,7 @@ func (pw *protoFileWriter) addDescription(description string, indents uint) erro
 	return nil
 }
 
-func (pw *protoFileWriter) addSyntax() error {
+func (pw *protoDefWriter) addSyntax() error {
 	if err := pw.writeLine("syntax = \"proto3\";", 0); err != nil {
 		return fmt.Errorf("could not write syntax: %v", err)
 	}
@@ -112,7 +112,7 @@ func (pw *protoFileWriter) addSyntax() error {
 	return nil
 }
 
-func (pw *protoFileWriter) addPackage() error {
+func (pw *protoDefWriter) addPackage() error {
 	if isEmptyStr(pw.Proto.Package) {
 		return fmt.Errorf("package name cannot be empty")
 	}
@@ -128,7 +128,7 @@ func (pw *protoFileWriter) addPackage() error {
 	return nil
 }
 
-func (pw *protoFileWriter) addImports() error {
+func (pw *protoDefWriter) addImports() error {
 	for _, imp := range pw.Proto.Imports {
 		if err := pw.addImport(imp); err != nil {
 			return fmt.Errorf("could not add import %s: %v", imp, err)
@@ -144,7 +144,7 @@ func (pw *protoFileWriter) addImports() error {
 	return nil
 }
 
-func (pw *protoFileWriter) addImport(imp string) error {
+func (pw *protoDefWriter) addImport(imp string) error {
 	if isEmptyStr(imp) {
 		return fmt.Errorf("import cannot be empty")
 	}
@@ -154,7 +154,7 @@ func (pw *protoFileWriter) addImport(imp string) error {
 	return nil
 }
 
-func (pw *protoFileWriter) addMessages() error {
+func (pw *protoDefWriter) addMessages() error {
 	for i := range pw.Proto.Messages {
 		if err := pw.addMessage(&pw.Proto.Messages[i], 0); err != nil {
 			return fmt.Errorf("could not add message %s at index %d: %v", pw.Proto.Messages[i].Name, i, err)
@@ -164,7 +164,7 @@ func (pw *protoFileWriter) addMessages() error {
 	return nil
 }
 
-func (pw *protoFileWriter) addMessage(m *Message, indents uint) error {
+func (pw *protoDefWriter) addMessage(m *Message, indents uint) error {
 	if err := pw.addDescription(m.Description, indents); err != nil {
 		return fmt.Errorf("could not add description for message: %v", err)
 	}
@@ -201,7 +201,7 @@ func (pw *protoFileWriter) addMessage(m *Message, indents uint) error {
 	return nil
 }
 
-func (pw *protoFileWriter) addMessageField(f *MessageField, indents uint) error {
+func (pw *protoDefWriter) addMessageField(f *MessageField, indents uint) error {
 	if err := pw.addDescription(f.Description, indents); err != nil {
 		return fmt.Errorf("could not add description for field: %v", err)
 	}
@@ -233,7 +233,7 @@ func (pw *protoFileWriter) addMessageField(f *MessageField, indents uint) error 
 	return nil
 }
 
-func (pw *protoFileWriter) addEnums() error {
+func (pw *protoDefWriter) addEnums() error {
 	for i := range pw.Proto.Enums {
 		if err := pw.addEnum(&pw.Proto.Enums[i], 0); err != nil {
 			return fmt.Errorf("could not add enum %s at index %d: %v", pw.Proto.Enums[i].Name, i, err)
@@ -243,7 +243,7 @@ func (pw *protoFileWriter) addEnums() error {
 	return nil
 }
 
-func (pw *protoFileWriter) addEnum(e *Enum, indents uint) error {
+func (pw *protoDefWriter) addEnum(e *Enum, indents uint) error {
 	if err := pw.addDescription(e.Description, indents); err != nil {
 		return fmt.Errorf("could not add description for enum: %v", err)
 	}
@@ -276,7 +276,7 @@ func (pw *protoFileWriter) addEnum(e *Enum, indents uint) error {
 	return nil
 }
 
-func (pw *protoFileWriter) addEnumConstant(c *EnumConstant, indents uint) error {
+func (pw *protoDefWriter) addEnumConstant(c *EnumConstant, indents uint) error {
 	if err := pw.addDescription(c.Description, indents); err != nil {
 		return fmt.Errorf("could not add description for costant: %v", err)
 	}
@@ -292,7 +292,7 @@ func (pw *protoFileWriter) addEnumConstant(c *EnumConstant, indents uint) error 
 	return nil
 }
 
-func (pw *protoFileWriter) addServices() error {
+func (pw *protoDefWriter) addServices() error {
 	for i := range pw.Proto.Services {
 		if err := pw.addService(&pw.Proto.Services[i], 0); err != nil {
 			return fmt.Errorf("could not add service %s at index %d: %v", pw.Proto.Services[i].Name, i, err)
@@ -302,7 +302,7 @@ func (pw *protoFileWriter) addServices() error {
 	return nil
 }
 
-func (pw *protoFileWriter) addService(s *Service, indents uint) error {
+func (pw *protoDefWriter) addService(s *Service, indents uint) error {
 	if err := pw.addDescription(s.Description, indents); err != nil {
 		return fmt.Errorf("could not add description for service: %v", err)
 	}
@@ -327,7 +327,7 @@ func (pw *protoFileWriter) addService(s *Service, indents uint) error {
 	return nil
 }
 
-func (pw *protoFileWriter) addServiceMethod(m *ServiceMethod, indents uint) error {
+func (pw *protoDefWriter) addServiceMethod(m *ServiceMethod, indents uint) error {
 	if err := pw.addDescription(m.Description, indents); err != nil {
 		return fmt.Errorf("could not add description for method: %v", err)
 	}

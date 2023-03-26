@@ -2,7 +2,7 @@ package protodefgen
 
 import "strings"
 
-type ProtoFileWriter interface {
+type ProtoDefWriter interface {
 	ToStringBuilder() (*strings.Builder, error)
 	ToFile(string) error
 }

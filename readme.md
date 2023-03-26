@@ -18,7 +18,7 @@ This package provides Go structures for definitions used in Protocol Buffer file
     import pfg "github.com/xapi-tools/protodefgen"
 
     func main() {
-        pw := pfg.NewProtoFileWriter(
+        pw := pfg.NewProtoDefWriter(
             &pfg.Proto{
                 Package: "test",
                 Imports: []string{"google/protobuf/empty.proto"},
