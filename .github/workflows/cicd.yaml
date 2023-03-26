@@ -32,6 +32,7 @@ jobs:
       - name: Test protobuf definitions
         run: |
           protoc testdata/*.proto --cpp_out=testout
+          ls -lht testout/
 
   lint:
     runs-on: ubuntu-22.04
