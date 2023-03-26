@@ -26,10 +26,10 @@ jobs:
           sed -n '16,60p' readme.md > testout/doctest.go
           cd testout && go run doctest.go && cat *
 
-      - name: Install Protoc
+      - name: Install Protocol Buffer Compiler
         uses: arduino/setup-protoc@v1
 
-      - name: Test protobuf definitions
+      - name: Test Protocol Buffer Definitions
         run: |
           protoc testdata/*.proto --cpp_out=testout
           ls -lht testout/testdata
