@@ -22,9 +22,17 @@ jobs:
 
       - name: Doc Test
         run: |
-          rm -rf doctest && mkdir -p doctest
-          sed -n '16,60p' readme.md > doctest/doctest.go
-          cd doctest && go run doctest.go && cat *
+          rm -rf testout && mkdir -p testout
+          sed -n '16,60p' readme.md > testout/doctest.go
+          cd testout && go run doctest.go && cat *
+
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v1
+
+      - name: Test protobuf definitions
+        run: |
+          protoc testdata/*.proto --cpp_out=testout
+
   lint:
     runs-on: ubuntu-22.04
     steps:
