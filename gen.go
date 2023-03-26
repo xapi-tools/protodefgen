@@ -1,4 +1,4 @@
-package protofilegen
+package protodefgen
 
 import (
 	"fmt"
@@ -214,6 +214,10 @@ func (pw *protoFileWriter) addMessageField(f *MessageField, indents uint) error 
 		return fmt.Errorf("field type cannot be empty")
 	}
 
+	if f.Id < 1 {
+		return fmt.Errorf("field id cannot be less than 1")
+	}
+
 	cardinality := ""
 
 	if f.Optional {
@@ -250,6 +254,14 @@ func (pw *protoFileWriter) addEnum(e *Enum, indents uint) error {
 
 	if err := pw.writeLine(fmt.Sprintf("enum %s {", e.Name), indents); err != nil {
 		return fmt.Errorf("could not add enum start: %v", err)
+	}
+
+	if len(e.Constants) < 1 {
+		return fmt.Errorf("must have at least one enum constant")
+	}
+
+	if e.Constants[0].Value != 0 {
+		return fmt.Errorf("first enum constant must have a value 0")
 	}
 
 	for i := range e.Constants {

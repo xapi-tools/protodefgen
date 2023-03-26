@@ -1,4 +1,4 @@
-package protofilegen
+package protodefgen
 
 type Proto struct {
 	Description string

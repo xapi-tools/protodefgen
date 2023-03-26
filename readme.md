@@ -1,4 +1,4 @@
-# protofilegen - Protocol Buffer File Generator
+# protodefgen - Protocol Buffer File Generator
 
 This package provides Go structures for constructs used in Protocol Buffer file and a helper to write those constructs to `.proto` file with valid syntax.
 
@@ -7,7 +7,7 @@ This package provides Go structures for constructs used in Protocol Buffer file 
 1. Get the package
 
     ```bash
-    go get github.com/xapi-tools/protofilegen@latest
+    go get github.com/xapi-tools/protodefgen@latest
     ```
 
 2. Create Go structures for Protocol Buffers and generate file
@@ -15,7 +15,7 @@ This package provides Go structures for constructs used in Protocol Buffer file 
     ```go
     package main
 
-    import pfg "github.com/xapi-tools/protofilegen"
+    import pfg "github.com/xapi-tools/protodefgen"
 
     func main() {
         pw := pfg.NewProtoFileWriter(

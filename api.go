@@ -1,4 +1,4 @@
-package protofilegen
+package protodefgen
 
 import "strings"
 
